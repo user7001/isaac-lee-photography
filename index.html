@@ -7,20 +7,19 @@
   <meta name="description" content="Selected photographs by Isaac Lee.">
   <title>ISAAC LEE — Photography</title>
   <style>
-    :root { color-scheme: dark; --black: #000; --white: #fff; --muted: #aaa; --line: #252525; }
+    :root { color-scheme: dark; --black: #000; --white: #fff; --muted: #aaa; }
     * { box-sizing: border-box; }
     html { background: var(--black); scroll-behavior: smooth; }
     body { margin: 0; color: var(--white); background: var(--black); font-family: Arial, Helvetica, sans-serif; }
-    header { max-width: 2100px; margin: 0 auto; padding: clamp(38px, 6vw, 88px) clamp(18px, 3vw, 48px) clamp(34px, 4vw, 58px); display: grid; justify-items: center; text-align: center; gap: 14px; }
+    header { max-width: 1600px; margin: 0 auto; padding: clamp(38px, 6vw, 88px) clamp(18px, 3vw, 48px) clamp(34px, 4vw, 58px); display: grid; justify-items: center; text-align: center; gap: 14px; }
     h1 { margin: 0; color: #fff; font: 700 clamp(56px, 10vw, 138px)/.92 Arial, Helvetica, sans-serif; letter-spacing: -.055em; }
     .intro { margin: 12px 0 0; color: #bbb; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; }
     .count { color: #888; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
-    main { max-width: 2100px; margin: 0 auto; padding: 0 clamp(14px, 2.5vw, 42px) 90px; }
-    .gallery { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); grid-auto-rows: 8px; grid-auto-flow: row; gap: clamp(10px, 1.2vw, 20px); align-items: stretch; }
-    .photo { --tilt: 0deg; --nudge: 0px; display: grid; place-items: center; grid-column: span var(--span, 2); grid-row: span var(--rows, 42); width: 100%; height: 100%; margin: 0; padding: clamp(3px, .5vw, 9px); border: 0; background: #050505; cursor: zoom-in; overflow: hidden; transform: translateY(var(--nudge)) rotate(var(--tilt)); transition: transform .35s ease, filter .3s ease; }
-    .photo img { display: block; width: 100%; height: 100%; object-fit: contain; transition: transform .45s cubic-bezier(.2,.7,.2,1), filter .3s ease; }
-    .photo:hover { z-index: 2; transform: translateY(calc(var(--nudge) - 4px)) rotate(0deg); filter: brightness(1.12); }
-    footer { max-width: 1900px; margin: 0 auto; padding: 20px clamp(18px, 3vw, 48px) 30px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; color: #777; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    main { max-width: 1600px; margin: 0 auto; padding: 0 clamp(14px, 2.5vw, 40px) 70px; }
+    .gallery { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(12px, 1.8vw, 26px); align-items: start; }
+    .photo { display: grid; place-items: center; width: 100%; height: clamp(250px, 30vw, 350px); margin: 0; padding: 0; border: 0; background: transparent; cursor: zoom-in; overflow: hidden; }
+    .photo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+    footer { max-width: 1900px; margin: 0 auto; padding: 20px clamp(18px, 3vw, 48px) 30px; display: flex; justify-content: space-between; color: #777; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
     dialog { width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; padding: 24px; border: 0; background: rgba(0,0,0,.97); color: #fff; }
     dialog::backdrop { background: rgba(0,0,0,.97); }
     .lightbox { position: relative; width: 100%; height: 100%; display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center; }
@@ -31,15 +30,15 @@
     .step { top: 50%; transform: translateY(-50%); }
     .previous { left: 12px; }
     .next { right: 12px; }
-    @media (max-width: 1000px) { .gallery { grid-template-columns: repeat(8, minmax(0, 1fr)); } .photo.featured { grid-column: span 1; --rows: 36; } .photo:not(.featured) { --span: 2; --rows: 38; } }
-    @media (max-width: 620px) { header { padding-top: 38px; } .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; } .photo.featured, .photo:not(.featured) { grid-column: span 2; --rows: 34; --tilt: 0deg; --nudge: 0px; } main { padding-inline: 12px; padding-bottom: 52px; } footer { padding-inline: 14px; } dialog { padding: 10px; } .lightbox img { max-width: 100%; max-height: calc(100vh - 72px); } .step { width: 38px; height: 38px; } .previous { left: 4px; } .next { right: 4px; } }
+    @media (max-width: 1100px) { .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); } .photo { height: clamp(230px, 34vw, 310px); } }
+    @media (max-width: 760px) { .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); } .photo { height: clamp(210px, 42vw, 290px); } }
+    @media (max-width: 520px) { header { padding-top: 38px; } .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .photo { height: clamp(220px, 68vw, 300px); } main { padding-inline: 12px; padding-bottom: 48px; } footer { padding-inline: 14px; } dialog { padding: 10px; } .lightbox img { max-width: 100%; max-height: calc(100vh - 72px); } .step { width: 38px; height: 38px; } .previous { left: 4px; } .next { right: 4px; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
   </style>
 </head>
 <body>
   <header>
     <div><h1>ISAAC LEE</h1><p class="intro">Selected photography</p></div>
-    <div class="count">65 photographs</div>
   </header>
   <main><section class="gallery" id="gallery" aria-label="Photography portfolio"></section></main>
   <footer><span>ISAAC LEE</span><span>2015 — 2026</span></footer>
@@ -59,25 +58,17 @@
     const caption = viewer.querySelector('.caption');
     let photos = [];
     let active = 0;
-    fetch('./photos.json?v=20261126-3', { cache: 'no-store' }).then(response => response.json()).then(items => {
+    fetch('./photos.json?v=20261126-4', { cache: 'no-store' }).then(response => response.json()).then(items => {
       photos = items;
       for (const [index, photo] of photos.entries()) {
         const button = document.createElement('button');
         button.className = 'photo';
-        const layout = index < 7
-          ? { span: 2, rows: [40, 35, 42, 36, 39, 43, 37][index], tilt: [-1.2, .5, 1, -.6, .8, -1, .4][index], nudge: [0, 14, -7, 10, -4, 12, -9][index], featured: true }
-          : { span: [3, 2, 4, 2, 3, 2, 4, 3, 2, 3, 4, 2, 3, 2, 4][(index - 7) % 15], rows: [48, 42, 61, 38, 52, 43, 58, 46, 39, 54, 62, 40, 50, 44, 56][(index - 7) % 15], tilt: [-1.4, .8, .3, -1, 1.1, -.5, .6, -1.2, .4][(index - 7) % 9], nudge: [0, 12, -8, 7, -4, 15, -5, 9, -10][(index - 7) % 9] };
-        if (layout.featured) button.classList.add('featured');
-        button.style.setProperty('--span', layout.span);
-        button.style.setProperty('--rows', layout.rows);
-        button.style.setProperty('--tilt', `${layout.tilt}deg`);
-        button.style.setProperty('--nudge', `${layout.nudge}px`);
         button.type = 'button';
         button.setAttribute('aria-label', `Open photograph ${index + 1}`);
         const image = document.createElement('img');
         image.src = photo.src;
         image.alt = `Photography ${index + 1}`;
-        image.loading = index < 7 ? 'eager' : 'lazy';
+        image.loading = index < 5 ? 'eager' : 'lazy';
         image.decoding = 'async';
         button.append(image);
         button.addEventListener('click', () => openPhoto(index));
