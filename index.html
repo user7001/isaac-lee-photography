@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f3">
+  <meta name="description" content="Selected photographs by Isaac Lee.">
+  <title>Isaac Lee — Photography</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme: light; --paper: #f7f6f3; --ink: #24231f; --muted: #77736d; --line: #dedbd5; }
+    * { box-sizing: border-box; }
+    html { background: var(--paper); scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: "DM Sans", sans-serif; }
+    header { max-width: 1500px; margin: 0 auto; padding: clamp(30px, 6vw, 82px) clamp(22px, 5vw, 72px) 34px; display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+    h1 { margin: 0; font: 500 clamp(35px, 5vw, 62px)/1.05 "Playfair Display", Georgia, serif; letter-spacing: -.035em; }
+    .intro { margin: 12px 0 0; color: var(--muted); font-size: 14px; letter-spacing: .025em; }
+    .count { padding-bottom: 4px; color: var(--muted); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+    main { max-width: 1500px; margin: 0 auto; padding: 0 clamp(22px, 5vw, 72px) 82px; }
+    .gallery { columns: 3 280px; column-gap: clamp(14px, 2.2vw, 30px); }
+    .photo { display: block; width: 100%; margin: 0 0 clamp(14px, 2.2vw, 30px); padding: 0; border: 0; background: none; cursor: zoom-in; break-inside: avoid; overflow: hidden; }
+    .photo img { display: block; width: 100%; height: auto; transition: transform .55s cubic-bezier(.2,.7,.2,1), filter .35s ease; }
+    .photo:hover img { transform: scale(1.018); filter: brightness(.97); }
+    footer { max-width: 1500px; margin: 0 auto; padding: 22px clamp(22px, 5vw, 72px) 38px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; letter-spacing: .04em; }
+    dialog { width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; padding: 24px; border: 0; background: rgba(15,15,14,.96); color: #fff; }
+    dialog::backdrop { background: rgba(15,15,14,.96); }
+    .lightbox { position: relative; width: 100%; height: 100%; display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center; }
+    .lightbox img { max-width: min(92vw, 1500px); max-height: calc(100vh - 94px); object-fit: contain; }
+    .caption { padding-top: 14px; color: #c7c4be; font-size: 12px; letter-spacing: .08em; }
+    .close, .step { position: absolute; z-index: 2; display: grid; place-items: center; width: 44px; height: 44px; color: white; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; background: rgba(20,20,20,.35); font: 24px/1 sans-serif; cursor: pointer; }
+    .close { top: 12px; right: 12px; }
+    .step { top: 50%; transform: translateY(-50%); }
+    .previous { left: 12px; }
+    .next { right: 12px; }
+    @media (max-width: 700px) { header { align-items: start; padding-bottom: 25px; } .count { padding-top: 8px; } .gallery { columns: 2 145px; column-gap: 12px; } .photo { margin-bottom: 12px; } main { padding-bottom: 48px; } dialog { padding: 10px; } .lightbox img { max-width: 100%; max-height: calc(100vh - 72px); } .step { width: 38px; height: 38px; } .previous { left: 4px; } .next { right: 4px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div><h1>Isaac Lee</h1><p class="intro">Selected photography</p></div>
+    <div class="count">66 photographs</div>
+  </header>
+  <main><section class="gallery" id="gallery" aria-label="Photography portfolio"></section></main>
+  <footer><span>Isaac Lee</span><span>2015 — 2026</span></footer>
+  <dialog id="viewer" aria-label="Photo viewer">
+    <div class="lightbox">
+      <button class="close" aria-label="Close photo viewer">×</button>
+      <button class="step previous" aria-label="Previous photo">‹</button>
+      <img alt="">
+      <button class="step next" aria-label="Next photo">›</button>
+      <div class="caption" aria-live="polite"></div>
+    </div>
+  </dialog>
+  <script>
+    const gallery = document.querySelector('#gallery');
+    const viewer = document.querySelector('#viewer');
+    const viewerImage = viewer.querySelector('img');
+    const caption = viewer.querySelector('.caption');
+    let photos = [];
+    let active = 0;
+    fetch('./photos.json').then(response => response.json()).then(items => {
+      photos = items;
+      for (const [index, photo] of photos.entries()) {
+        const button = document.createElement('button');
+        button.className = 'photo';
+        button.type = 'button';
+        button.setAttribute('aria-label', `Open photograph ${index + 1}`);
+        const image = document.createElement('img');
+        image.src = photo.src;
+        image.alt = `Photography ${index + 1}`;
+        image.loading = index < 6 ? 'eager' : 'lazy';
+        image.decoding = 'async';
+        button.append(image);
+        button.addEventListener('click', () => openPhoto(index));
+        gallery.append(button);
+      }
+    });
+    function openPhoto(index) {
+      active = (index + photos.length) % photos.length;
+      viewerImage.src = photos[active].src;
+      viewerImage.alt = `Photography ${active + 1}`;
+      caption.textContent = `${photos[active].caption.replaceAll('.', ':')}  ·  ${String(active + 1).padStart(2, '0')} / ${photos.length}`;
+      if (!viewer.open) viewer.showModal();
+    }
+    viewer.querySelector('.close').addEventListener('click', () => viewer.close());
+    viewer.querySelector('.previous').addEventListener('click', () => openPhoto(active - 1));
+    viewer.querySelector('.next').addEventListener('click', () => openPhoto(active + 1));
+    viewer.addEventListener('click', event => { if (event.target === viewer) viewer.close(); });
+    document.addEventListener('keydown', event => {
+      if (!viewer.open) return;
+      if (event.key === 'ArrowLeft') openPhoto(active - 1);
+      if (event.key === 'ArrowRight') openPhoto(active + 1);
+    });
+  </script>
+</body>
+</html>
