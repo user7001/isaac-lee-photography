@@ -1,5 +1,40 @@
 [
   {
+    "src": "photos/018.jpg",
+    "caption": "2026-11-06 16.51.10",
+    "index": 18
+  },
+  {
+    "src": "photos/001.jpg",
+    "caption": "2015-03-01 07.10.51",
+    "index": 1
+  },
+  {
+    "src": "photos/037.jpg",
+    "caption": "2026-11-20 15.50.00",
+    "index": 37
+  },
+  {
+    "src": "photos/050.jpg",
+    "caption": "2026-11-21 01.17.00",
+    "index": 50
+  },
+  {
+    "src": "photos/009.jpg",
+    "caption": "2023-06-29 19.47.40",
+    "index": 9
+  },
+  {
+    "src": "photos/060.jpg",
+    "caption": "2026-11-21 19.31.00",
+    "index": 60
+  },
+  {
+    "src": "photos/066.jpg",
+    "caption": "2026-11-22 06.55.53",
+    "index": 66
+  },
+  {
     "src": "photos/003.jpg",
     "caption": "2017-08-11 13.17.05",
     "index": 3
@@ -25,11 +60,6 @@
     "index": 65
   },
   {
-    "src": "photos/001.jpg",
-    "caption": "2015-03-01 07.10.51",
-    "index": 1
-  },
-  {
     "src": "photos/028.jpg",
     "caption": "2026-11-19 21.18.20",
     "index": 28
@@ -50,19 +80,9 @@
     "index": 53
   },
   {
-    "src": "photos/050.jpg",
-    "caption": "2026-11-21 01.17.00",
-    "index": 50
-  },
-  {
     "src": "photos/024.jpg",
     "caption": "2026-11-19 18.14.00",
     "index": 24
-  },
-  {
-    "src": "photos/009.jpg",
-    "caption": "2023-06-29 19.47.40",
-    "index": 9
   },
   {
     "src": "photos/030.jpg",
@@ -120,16 +140,6 @@
     "index": 35
   },
   {
-    "src": "photos/060.jpg",
-    "caption": "2026-11-21 19.31.00",
-    "index": 60
-  },
-  {
-    "src": "photos/037.jpg",
-    "caption": "2026-11-20 15.50.00",
-    "index": 37
-  },
-  {
     "src": "photos/038.jpg",
     "caption": "2026-11-20 15.57.00",
     "index": 38
@@ -163,11 +173,6 @@
     "src": "photos/055.jpg",
     "caption": "2026-11-21 16.52.27",
     "index": 55
-  },
-  {
-    "src": "photos/018.jpg",
-    "caption": "2026-11-06 16.51.10",
-    "index": 18
   },
   {
     "src": "photos/034.jpg",
@@ -223,11 +228,6 @@
     "src": "photos/046.jpg",
     "caption": "2026-11-20 20.05.00",
     "index": 46
-  },
-  {
-    "src": "photos/066.jpg",
-    "caption": "2026-11-22 06.55.53",
-    "index": 66
   },
   {
     "src": "photos/056.jpg",
@@ -323,10 +323,5 @@
     "src": "photos/031.jpg",
     "caption": "2026-11-20 03.08.19",
     "index": 31
-  },
-  {
-    "src": "photos/062.jpg",
-    "caption": "2026-11-21 22.11.00",
-    "index": 62
   }
 ]
