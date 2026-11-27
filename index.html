@@ -25,22 +25,6 @@
     .lightbox { position: relative; width: 100%; height: 100%; display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center; }
     .lightbox img { max-width: min(92vw, 1500px); max-height: calc(100vh - 94px); object-fit: contain; }
     .caption { padding-top: 14px; color: #c7c4be; font-size: 12px; letter-spacing: .08em; }
-    .organizer { max-width: 1600px; margin: 0 auto 24px; padding: 0 clamp(14px, 2.5vw, 40px); }
-    .organizer-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; }
-    .organizer button { min-height: 42px; padding: 0 15px; color: #fff; border: 1px solid #555; border-radius: 3px; background: #111; font: 600 14px Arial, Helvetica, sans-serif; cursor: pointer; }
-    .organizer button:hover:not(:disabled) { border-color: #fff; }
-    .organizer button:disabled { opacity: .38; cursor: default; }
-    .organizer .primary { color: #000; background: #fff; border-color: #fff; }
-    .organizer .hint { flex-basis: 100%; margin: 2px 0 4px; color: #aaa; text-align: center; font-size: 13px; line-height: 1.5; }
-    .selection-count { min-width: 76px; color: #bbb; font-size: 13px; text-align: center; }
-    .photo-card { position: relative; min-width: 0; }
-    .photo-card .photo { display: grid; }
-    .photo-card.selected .photo { outline: 3px solid #fff; outline-offset: -3px; }
-    .photo-card.selected::after { content: '✓'; position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 30px; height: 30px; color: #000; background: #fff; border-radius: 50%; font: 700 18px Arial, sans-serif; pointer-events: none; }
-    .gallery.arranging .photo { cursor: grab; }
-    .gallery.arranging .photo:active { cursor: grabbing; }
-    .gallery.arranging .photo-card.drag-target .photo { outline: 2px dashed #fff; outline-offset: 4px; }
-    .gallery.arranging .photo-card { touch-action: pan-y; }
     .close, .step { position: absolute; z-index: 2; display: grid; place-items: center; width: 44px; height: 44px; color: white; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; background: rgba(20,20,20,.35); font: 24px/1 Arial, sans-serif; cursor: pointer; }
     .close { top: 12px; right: 12px; }
     .step { top: 50%; transform: translateY(-50%); }
@@ -57,11 +41,6 @@
     <div><h1>ISAAC LEE</h1><p class="intro">Selected photography</p></div>
   </header>
   <main>
-    <section class="organizer" aria-label="Photo organizer">
-      <div class="organizer-bar" id="organizerBar">
-        <button type="button" class="primary" id="arrangeButton">Arrange photos</button>
-      </div>
-    </section>
     <section class="gallery" id="gallery" aria-label="Photography portfolio"></section>
   </main>
   <footer><span>ISAAC LEE</span><span>2015 — 2026</span></footer>
@@ -80,199 +59,26 @@
     const viewerImage = viewer.querySelector('img');
     const caption = viewer.querySelector('.caption');
     let photos = [];
-    let originalPhotos = [];
     let active = 0;
-    let arranging = false;
-    let selected = new Set();
-    let removed = [];
-    let undoStack = [];
-    const organizerBar = document.querySelector('#organizerBar');
-    const arrangeButton = document.querySelector('#arrangeButton');
-    fetch('./photos.json?v=20261126-5', { cache: 'no-store' }).then(response => response.json()).then(items => {
-      originalPhotos = items;
-      let locallyRemoved = new Set();
-      try {
-        const saved = JSON.parse(localStorage.getItem('isaac-gallery-order') || 'null');
-        const savedRemoved = JSON.parse(localStorage.getItem('isaac-gallery-removed') || '[]');
-        if (Array.isArray(savedRemoved)) locallyRemoved = new Set(savedRemoved);
-        const available = items.filter(photo => !locallyRemoved.has(photo.src));
-        const bySrc = new Map(available.map(photo => [photo.src, photo]));
-        const restored = Array.isArray(saved) ? saved.map(src => bySrc.get(src)).filter(Boolean) : [];
-        photos = [...restored, ...available.filter(photo => !restored.some(savedPhoto => savedPhoto.src === photo.src))];
-        removed = items.filter(photo => locallyRemoved.has(photo.src));
-      } catch {}
-      if (!photos.length && !removed.length) photos = items;
-      renderGallery();
-      arrangeButton.addEventListener('click', () => setArrangeMode(!arranging));
-    });
-    function renderGallery() {
-      gallery.replaceChildren();
-      photos.forEach((photo, index) => {
-        const card = document.createElement('article');
-        card.className = `photo-card${selected.has(photo.src) ? ' selected' : ''}`;
-        card.dataset.src = photo.src;
-        card.draggable = arranging;
-        const button = document.createElement('button');
-        button.className = 'photo';
-        button.type = 'button';
-        button.setAttribute('aria-label', arranging ? `Select photograph ${index + 1}` : `Open photograph ${index + 1}`);
-        button.setAttribute('aria-pressed', String(selected.has(photo.src)));
-        const image = document.createElement('img');
-        image.src = photo.src;
-        image.alt = `Photography ${index + 1}`;
-        image.loading = index < 5 ? 'eager' : 'lazy';
-        image.decoding = 'async';
-        button.append(image);
-        button.addEventListener('click', () => arranging ? toggleSelected(photo.src) : openPhoto(index));
-        card.addEventListener('dragstart', event => {
-          if (!arranging) return event.preventDefault();
-          if (!selected.has(photo.src)) {
-            selected = new Set([photo.src]);
-            gallery.querySelectorAll('.photo-card').forEach(node => {
-              const isSelected = selected.has(node.dataset.src);
-              node.classList.toggle('selected', isSelected);
-              node.querySelector('.photo').setAttribute('aria-pressed', String(isSelected));
-            });
-            updateToolbar();
-          }
-          event.dataTransfer.effectAllowed = 'move';
-          event.dataTransfer.setData('text/plain', photo.src);
-          card.classList.add('dragging');
+    fetch('./photos.json?v=20261127-6', { cache: 'no-store' })
+      .then(response => response.json())
+      .then(items => {
+        photos = items;
+        photos.forEach((photo, index) => {
+          const button = document.createElement('button');
+          button.className = 'photo';
+          button.type = 'button';
+          button.setAttribute('aria-label', `Open photograph ${index + 1}`);
+          const image = document.createElement('img');
+          image.src = photo.src;
+          image.alt = `Photography ${index + 1}`;
+          image.loading = index < 5 ? 'eager' : 'lazy';
+          image.decoding = 'async';
+          button.append(image);
+          button.addEventListener('click', () => openPhoto(index));
+          gallery.append(button);
         });
-        card.addEventListener('dragend', () => card.classList.remove('dragging'));
-        card.addEventListener('dragover', event => { if (arranging) { event.preventDefault(); card.classList.add('drag-target'); } });
-        card.addEventListener('dragleave', () => card.classList.remove('drag-target'));
-        card.addEventListener('drop', event => {
-          if (!arranging) return;
-          event.preventDefault();
-          card.classList.remove('drag-target');
-          moveSelectedBefore(event.dataTransfer.getData('text/plain'), photo.src);
-        });
-        card.append(button);
-        gallery.append(card);
       });
-      gallery.classList.toggle('arranging', arranging);
-    }
-    function setArrangeMode(enabled) {
-      arranging = enabled;
-      selected.clear();
-      if (enabled) {
-        organizerBar.innerHTML = `
-          <p class="hint">Click photos to select them. Drag a selected photo to move the group, or use Earlier/Later. Your layout stays in this browser; download photos.json when you want to publish it.</p>
-          <button type="button" id="selectAllButton">Select all</button>
-          <button type="button" id="clearSelectionButton">Clear selection</button>
-          <span class="selection-count" id="selectionCount">0 selected</span>
-          <button type="button" id="earlierButton" disabled>Earlier</button>
-          <button type="button" id="laterButton" disabled>Later</button>
-          <button type="button" id="removeButton" disabled>Remove selected</button>
-          <button type="button" id="undoButton" disabled>Undo</button>
-          <button type="button" id="resetButton">Reset</button>
-          <button type="button" class="primary" id="exportButton">Download changes</button>
-          <button type="button" id="doneButton">Done</button>`;
-        document.querySelector('#selectAllButton').addEventListener('click', () => { selected = new Set(photos.map(photo => photo.src)); renderGallery(); updateToolbar(); });
-        document.querySelector('#clearSelectionButton').addEventListener('click', () => { selected.clear(); renderGallery(); updateToolbar(); });
-        document.querySelector('#earlierButton').addEventListener('click', () => nudgeSelected(-1));
-        document.querySelector('#laterButton').addEventListener('click', () => nudgeSelected(1));
-        document.querySelector('#removeButton').addEventListener('click', removeSelected);
-        document.querySelector('#undoButton').addEventListener('click', undo);
-        document.querySelector('#resetButton').addEventListener('click', resetOrder);
-        document.querySelector('#exportButton').addEventListener('click', downloadChanges);
-        document.querySelector('#doneButton').addEventListener('click', () => setArrangeMode(false));
-      } else {
-        organizerBar.innerHTML = '';
-        organizerBar.append(arrangeButton);
-      }
-      renderGallery();
-    }
-    function saveLocalOrder() {
-      try {
-        localStorage.setItem('isaac-gallery-order', JSON.stringify(photos.map(photo => photo.src)));
-        localStorage.setItem('isaac-gallery-removed', JSON.stringify(removed.map(photo => photo.src)));
-      } catch {}
-    }
-    function remember() { undoStack.push({ photos: [...photos], removed: [...removed] }); }
-    function toggleSelected(src) {
-      if (selected.has(src)) selected.delete(src); else selected.add(src);
-      renderGallery();
-      updateToolbar();
-    }
-    function updateToolbar() {
-      const count = selected.size;
-      const label = document.querySelector('#selectionCount');
-      if (!label) return;
-      label.textContent = `${count} selected`;
-      document.querySelector('#removeButton').disabled = count === 0;
-      document.querySelector('#earlierButton').disabled = count === 0;
-      document.querySelector('#laterButton').disabled = count === 0;
-      document.querySelector('#undoButton').disabled = undoStack.length === 0;
-    }
-    function moveSelectedBefore(draggedSrc, targetSrc) {
-      if (!selected.has(draggedSrc) || selected.has(targetSrc)) return;
-      remember();
-      const moving = photos.filter(photo => selected.has(photo.src));
-      const rest = photos.filter(photo => !selected.has(photo.src));
-      const targetIndex = rest.findIndex(photo => photo.src === targetSrc);
-      rest.splice(targetIndex < 0 ? rest.length : targetIndex, 0, ...moving);
-      photos = rest;
-      saveLocalOrder();
-      renderGallery();
-      updateToolbar();
-    }
-    function removeSelected() {
-      if (!selected.size) return;
-      remember();
-      removed.push(...photos.filter(photo => selected.has(photo.src)));
-      photos = photos.filter(photo => !selected.has(photo.src));
-      selected.clear();
-      saveLocalOrder();
-      renderGallery();
-      updateToolbar();
-    }
-    function nudgeSelected(direction) {
-      if (!selected.size) return;
-      remember();
-      if (direction < 0) {
-        for (let i = 1; i < photos.length; i++) {
-          if (selected.has(photos[i].src) && !selected.has(photos[i - 1].src)) [photos[i - 1], photos[i]] = [photos[i], photos[i - 1]];
-        }
-      } else {
-        for (let i = photos.length - 2; i >= 0; i--) {
-          if (selected.has(photos[i].src) && !selected.has(photos[i + 1].src)) [photos[i], photos[i + 1]] = [photos[i + 1], photos[i]];
-        }
-      }
-      saveLocalOrder();
-      renderGallery();
-      updateToolbar();
-    }
-    function undo() {
-      const previous = undoStack.pop();
-      if (!previous) return;
-      photos = previous.photos;
-      removed = previous.removed;
-      selected.clear();
-      saveLocalOrder();
-      renderGallery();
-      updateToolbar();
-    }
-    function resetOrder() {
-      remember();
-      photos = [...originalPhotos];
-      removed = [];
-      selected.clear();
-      try { localStorage.removeItem('isaac-gallery-removed'); } catch {}
-      saveLocalOrder();
-      renderGallery();
-      updateToolbar();
-    }
-    function downloadChanges() {
-      const contents = JSON.stringify(photos, null, 2) + '\n';
-      const url = URL.createObjectURL(new Blob([contents], { type: 'application/json' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'photos.json';
-      link.click();
-      URL.revokeObjectURL(url);
-    }
     function openPhoto(index) {
       active = (index + photos.length) % photos.length;
       viewerImage.src = photos[active].src;
