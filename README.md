@@ -1,6 +1,6 @@
 # Isaac Lee — Photography
 
-A static, responsive photography portfolio built for GitHub Pages. The page displays the 66 supplied photographs in filename order, with a full-screen viewer and keyboard navigation.
+A static, responsive photography portfolio built for GitHub Pages. The page displays the 66 supplied photographs in the order listed in `photos.json`, with a full-screen viewer and keyboard navigation.
 
 ## Publish
 
